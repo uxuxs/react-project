@@ -1,6 +1,12 @@
 import React, { createContext, useState, useEffect } from "react";
 
-export const AuthContext = createContext();
+export const AuthContext = createContext({
+  user: null,
+  login: () => ({ ok: false }),
+  logout: () => {},
+  isAuthenticated: false,
+  isAdmin: false,
+});
 
 const STORAGE_KEY = "app_auth";
 
@@ -27,10 +33,12 @@ export function AuthProvider({ children }) {
   function login({ username, password }) {
     const users = [
       { username: "admin", password: "adminpass", role: "admin" },
-      { username: "user", password: "userpass", role: "user" }
+      { username: "user", password: "userpass", role: "user" },
     ];
 
-    const found = users.find(x => x.username === username && x.password === password);
+    const found = users.find(
+      (x) => x.username === username && x.password === password
+    );
     if (!found) return { ok: false, message: "Неверные учётные данные" };
 
     const payload = { username: found.username, role: found.role };
@@ -46,7 +54,9 @@ export function AuthProvider({ children }) {
   const isAdmin = user?.role === "admin";
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, isAuthenticated, isAdmin }}>
+    <AuthContext.Provider
+      value={{ user, login, logout, isAuthenticated, isAdmin }}
+    >
       {children}
     </AuthContext.Provider>
   );
